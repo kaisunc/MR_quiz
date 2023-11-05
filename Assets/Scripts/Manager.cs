@@ -7,14 +7,10 @@ public class Manager : MonoBehaviour
 {
     public static Manager Instanse { get; private set; }
     public static GameObject SelectedObject;
-    public List<Box> boxes = new List<Box>();
-
-    public List<GameObject> uniGO;
-    public List<GameObject> subGO;
-
-    public GameObject composite;
-    // public GameObject uniComp;
-    // public GameObject subComp;
+    private List<Box> boxes = new List<Box>();
+    private List<GameObject> uniGO;
+    private List<GameObject> subGO;
+    private GameObject composite;
 
     void Awake()
     {
@@ -47,7 +43,7 @@ public class Manager : MonoBehaviour
         Model result;
         Model uniComp = CSG.Union(uniGO[0], uniGO[1]);
         Model subComp = CSG.Union(subGO[0], subGO[1]);
-        result = CSG.Subtract(uniComp, subComp);
+        result = CSG.Subtract(uniComp, subComp); // modified subtract method to use models instead of gameobject
         composite.GetComponent<MeshFilter>().sharedMesh = result.mesh;
         composite.transform.position = Vector3.zero;
         GenerateBarycentric(composite);
@@ -61,7 +57,6 @@ public class Manager : MonoBehaviour
             boxes[i]._selected = false;
         }
         box._selected = true;
-
     }
 
     public void UnSelect(Box box)
@@ -78,7 +73,7 @@ public class Manager : MonoBehaviour
         }
     }
 
-    public void GenerateBarycentric(GameObject go)
+    private void GenerateBarycentric(GameObject go)
     {
         Mesh m = go.GetComponent<MeshFilter>().sharedMesh;
 

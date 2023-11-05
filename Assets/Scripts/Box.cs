@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Box : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler 
 {
     public event Action<Box> EventSelected;
     public event Action<Box> EventUnSelect;
@@ -22,14 +22,6 @@ public class Box : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDrag
         {
             GetComponent<MeshRenderer>().enabled = true;
         }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-    }
-
-    public void OnBeginDrag(PointerEventData eventData)
-    {
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -115,7 +107,4 @@ public class Box : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDrag
         EventSelected(this);
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-    }
 }
