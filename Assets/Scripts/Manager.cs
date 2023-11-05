@@ -7,10 +7,10 @@ public class Manager : MonoBehaviour
 {
     public static Manager Instanse { get; private set; }
     public static GameObject SelectedObject;
-    private List<Box> boxes = new List<Box>();
-    private List<GameObject> uniGO;
-    private List<GameObject> subGO;
-    private GameObject composite;
+    [SerializeField] private List<Box> boxes = new List<Box>();
+    [SerializeField] private List<GameObject> uniGO;
+    [SerializeField] private List<GameObject> subGO;
+    [SerializeField] private GameObject composite;
 
     void Awake()
     {
