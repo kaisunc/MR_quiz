@@ -1,16 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Parabox.CSG;
-using System.Collections;
+using System.Linq;
 
 public class Manager : MonoBehaviour
 {
     public static Manager Instanse { get; private set; }
     public static GameObject SelectedObject;
-    [SerializeField] private List<Box> boxes = new List<Box>();
+    [SerializeField] private List<Box> boxes;
     [SerializeField] private List<GameObject> uniGO;
     [SerializeField] private List<GameObject> subGO;
     [SerializeField] private GameObject composite;
+
+    private Model subComp;
+    private Model uniComp;
+    private Model preComp;
 
     void Awake()
     {
@@ -35,15 +39,50 @@ public class Manager : MonoBehaviour
 
     void Start()
     {
-        DoOp();
+        Model result;
+        uniComp = CSG.Union(uniGO[0], uniGO[1]);
+        subComp = CSG.Union(subGO[0], subGO[1]);
+        result = CSG.Subtract(uniComp, subComp); // modified subtract method to use models instead of gameobject
+        composite.GetComponent<MeshFilter>().sharedMesh = result.mesh;
+        composite.transform.position = Vector3.zero;
+        GenerateBarycentric(composite);
+    }
+
+    public void PreOp(Box box)
+    {
+
+        int otherBox = 0;
+
+        if (box.name.Contains("uni"))
+        {
+            subComp = CSG.Union(subGO[0], subGO[1]);
+        }
+        else
+        {
+            for (int i = 0; i < subGO.Count; i++)
+            {
+                if (subGO[i].gameObject != box.gameObject)
+                {
+                    otherBox = i;
+                    break;
+                }
+            }
+            uniComp = CSG.Union(uniGO[0], uniGO[1]);
+            preComp = CSG.Subtract(uniComp, new Model(subGO[otherBox]));
+        }
     }
 
     public void DoOp()
     {
         Model result;
-        Model uniComp = CSG.Union(uniGO[0], uniGO[1]);
-        Model subComp = CSG.Union(subGO[0], subGO[1]);
-        result = CSG.Subtract(uniComp, subComp); // modified subtract method to use models instead of gameobject
+
+        if(SelectedObject.name.Contains("uni")){ // save 1/3 op
+            uniComp = CSG.Union(uniGO[0], uniGO[1]);
+            result = CSG.Subtract(uniComp, subComp);
+        } else {
+            result = CSG.Subtract(preComp, new Model(SelectedObject)); // save 2/3 op
+        }
+
         composite.GetComponent<MeshFilter>().sharedMesh = result.mesh;
         composite.transform.position = Vector3.zero;
         GenerateBarycentric(composite);

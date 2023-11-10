@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Parabox.CSG;
 
 public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler 
 {
@@ -16,7 +17,7 @@ public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHa
         if (name.Contains("uni"))
         {
             GetComponent<MeshRenderer>().enabled = false;
-            GetComponentInChildren<MeshRenderer>().enabled = false;
+            // GetComponentInChildren<MeshRenderer>().enabled = true;
         }
         else
         {
@@ -36,7 +37,9 @@ public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHa
             GetComponent<MeshRenderer>().enabled = false;
             Camera cam = Camera.main;
             Ray ray = cam.ScreenPointToRay(eventData.position);
-            RaycastHit[] hits = Physics.RaycastAll(ray.origin, ray.direction, 2000f);
+            // RaycastHit[] hits = Physics.RaycastAll(ray.origin, ray.direction, 2000f);
+            RaycastHit[] hits = new RaycastHit[2];
+            Physics.RaycastNonAlloc(ray, hits, 1000f);
             for (int i = 0; i < hits.Length; i++)
             {
                 if (hits[i].transform.CompareTag("Ground"))
@@ -47,7 +50,6 @@ public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHa
             }
             Manager.Instanse.DoOp();
         }
-
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -58,13 +60,28 @@ public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHa
         }
         else
         {
-            if (Manager.SelectedObject == null) // don't highlight other when dragging
-            {
-                transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
-            }
+            transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
         }
     }
 
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (name.Contains("sub"))
+        {
+            GetComponent<MeshRenderer>().enabled = false;
+        }
+        else
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+        }
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Manager.SelectedObject = gameObject;
+        Manager.Instanse.PreOp(this);
+        EventSelected(this);
+    }
     public IEnumerator Fade()
     {
         float duration = 1f;
@@ -88,23 +105,4 @@ public class Box : MonoBehaviour, IDragHandler, IEndDragHandler, IPointerEnterHa
         }
         mr.enabled = false;
     }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (name.Contains("sub"))
-        {
-            GetComponent<MeshRenderer>().enabled = false;
-        }
-        else
-        {
-            transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
-        }
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        Manager.SelectedObject = eventData.selectedObject;
-        EventSelected(this);
-    }
-
 }

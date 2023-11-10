@@ -51,5 +51,7 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MantisRoboticsQuiz.sln"
+    "dotnet.defaultSolution": "MantisRoboticsQuiz.sln",
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/b60227ec-9cea-457c-8591-15f72f58c993/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/MRQuiz",
+    "appService.deploySubpath": "Build"
 }
